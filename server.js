@@ -2,9 +2,22 @@
 var http = require("http");
 var fs = require("fs");
 
-
-var html = fs.readFileSync("./index.html");
 http.createServer(function(req, res){
-                  res.write(html);
-                  res.end();
-                  }).listen(8080);
+  if(req.url.indexOf("favicon.ico")>0){
+    return ;
+  }
+
+ fs.readFile("./index.html", function(err, html){
+   var htmlToString = html.toString();
+   var variables = htmlToString.match(/[^\{\}]+(?=\})/g);
+   var nombre = "Luis";
+   var apellido = "Ramirez";
+   for(variable of variables){
+     var valor = eval(variable)
+     htmlToString = htmlToString.replace(`{${variable}}`, valor);
+   }
+   res.writeHeader(200,{"Content-Type":"text/html"});
+   res.write(htmlToString);
+   res.end();
+ });
+}).listen(8080);
